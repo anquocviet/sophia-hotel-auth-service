@@ -1,0 +1,28 @@
+name: sophia_hotel
+
+services:
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../
+      target: runtime
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - KEYCLOAK_URL=http://keycloak:3000
+      - KEYCLOAK_REALM=sophia-hotel
+      - KEYCLOAK_RESOURCE=admin-cli
+      - KEYCLOAK_BEARER_ONLY=true
+      - KEYCLOAK_PUBLIC_CLIENT=false
+      - KEYCLOAK_SSL_REQUIRED=none
+      - KEYCLOAK_CORS=true
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    networks:
+      - sophia_hotel
+
+networks:
+  sophia_hotel:
+    driver: bridge

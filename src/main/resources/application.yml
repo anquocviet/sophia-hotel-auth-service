@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: auth-service
+  mvc:
+    servlet:
+      path: /api/v1
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+
+keycloak:
+  url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+  resource: ${KEYCLOAK_RESOURCE}
+  bearer-only: ${KEYCLOAK_BEARER_ONLY}
+  public-client: ${KEYCLOAK_PUBLIC_CLIENT}
+  ssl-required: ${KEYCLOAK_SSL_REQUIRED}
+  cors: ${KEYCLOAK_CORS}
+  username: ${KEYCLOAK_ADMIN}
+  password: ${KEYCLOAK_ADMIN_PASSWORD}
+
