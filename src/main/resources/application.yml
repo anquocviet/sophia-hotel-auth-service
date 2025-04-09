@@ -1,6 +1,15 @@
 spring:
   application:
     name: auth-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   mvc:
     servlet:
       path: /api/v1
@@ -15,14 +24,9 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
 
-keycloak:
-  url: ${KEYCLOAK_URL}
-  realm: ${KEYCLOAK_REALM}
-  resource: ${KEYCLOAK_RESOURCE}
-  bearer-only: ${KEYCLOAK_BEARER_ONLY}
-  public-client: ${KEYCLOAK_PUBLIC_CLIENT}
-  ssl-required: ${KEYCLOAK_SSL_REQUIRED}
-  cors: ${KEYCLOAK_CORS}
-  username: ${KEYCLOAK_ADMIN}
-  password: ${KEYCLOAK_ADMIN_PASSWORD}
-
+logging:
+  level:
+    org:
+      springframework:
+        security=DEBUG:
+        web=DEBUG:
