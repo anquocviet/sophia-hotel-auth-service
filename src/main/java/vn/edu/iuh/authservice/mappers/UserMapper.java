@@ -5,9 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import vn.edu.iuh.authservice.models.User;
 import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
+import vn.edu.iuh.authservice.models.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
