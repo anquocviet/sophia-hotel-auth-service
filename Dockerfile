@@ -30,6 +30,7 @@ CMD ["java", "-jar", "app.jar"]
 # -------- Production Stage --------
 FROM base AS builder
 COPY . .
+RUN chmod +x gradlew
 RUN ./gradlew build --no-daemon -x test
 
 FROM eclipse-temurin:17-jdk-alpine AS runtime
