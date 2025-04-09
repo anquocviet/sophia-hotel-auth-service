@@ -1,0 +1,88 @@
+package vn.edu.iuh.authservice.services.impl;
+
+import org.springframework.stereotype.Service;
+import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
+import vn.edu.iuh.authservice.dtos.responses.UserResponse;
+import vn.edu.iuh.authservice.exceptions.impl.EmailExists;
+import vn.edu.iuh.authservice.exceptions.impl.UserNotFound;
+import vn.edu.iuh.authservice.exceptions.impl.UsernameExists;
+import vn.edu.iuh.authservice.mappers.UserMapper;
+import vn.edu.iuh.authservice.models.User;
+import vn.edu.iuh.authservice.repositories.UserRepository;
+import vn.edu.iuh.authservice.services.UserService;
+
+import java.util.UUID;
+
+/**
+ * @description
+ * @author: vie
+ * @date: 14/2/25
+ */
+@Service
+public class UserServiceImpl implements UserService {
+
+   private final UserRepository userRepository;
+   private final UserMapper userMapper;
+
+   public UserServiceImpl(UserRepository userRepository,
+                          UserMapper userMapper) {
+      this.userRepository = userRepository;
+      this.userMapper = userMapper;
+   }
+
+   @Override
+   public UserResponse createUser(CreateUserRequest userRequest) {
+      if (userRepository.existsByUsername(userRequest.username())) {
+         throw new UsernameExists();
+      }
+      if (userRepository.existsByEmail(userRequest.email())) {
+         throw new EmailExists();
+      }
+      return userMapper.toDto(userRepository.save(userMapper.toEntity(userRequest)));
+   }
+
+   @Override
+   public UserResponse getUserById(UUID id) {
+      return userRepository.findById(id).map(userMapper::toDto).orElseThrow(UserNotFound::new);
+   }
+
+   @Override
+   public UserResponse getUserByUsername(String username) {
+      return userRepository.findByUsername(username).map(userMapper::toDto)
+            .orElseThrow(UserNotFound::new);
+   }
+
+   @Override
+   public UserResponse getUserByPhone(String phone) {
+      return userRepository.findByPhone(phone).map(userMapper::toDto)
+            .orElseThrow(UserNotFound::new);
+   }
+
+   @Override
+   public UserResponse getUserByEmail(String email) {
+      return userRepository.findByEmail(email).map(userMapper::toDto)
+            .orElseThrow(UserNotFound::new);
+   }
+
+   @Override
+   public UserResponse updateUser(User user) {
+      if (userRepository.existsById(user.getId())) {
+         return userMapper.toDto(userRepository.save(user));
+      }
+      throw new UserNotFound();
+   }
+
+   @Override
+   public void deleteUser(UUID id) {
+      if (userRepository.existsById(id)) {
+         userRepository.deleteById(id);
+      } else {
+         throw new UserNotFound();
+      }
+   }
+
+   @Override
+   public boolean isOwner(String username, UUID userId) {
+      return userRepository.findByUsername(username).stream().anyMatch(user -> user.getId().equals(userId));
+   }
+}
