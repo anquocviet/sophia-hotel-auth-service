@@ -36,16 +36,7 @@ public class UserServiceImpl implements UserService {
       this.userMapper = userMapper;
    }
 
-   @Override
-   public UserResponse createUser(CreateUserRequest userRequest) {
-      if (userRepository.existsByUsername(userRequest.username())) {
-         throw new UsernameExists();
-      }
-      if (userRepository.existsByEmail(userRequest.email())) {
-         throw new EmailExists();
-      }
-      return userMapper.toDto(userRepository.save(userMapper.toEntity(userRequest)));
-   }
+
 
    @Override
    public UserResponse getUserById(UUID id) {
@@ -54,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
    @Override
    public UserResponse getUserByUsername(String username) {
-      return userRepository.findByUsername(username).map(userMapper::toDto)
+      return userRepository.findByUsernameLikeIgnoreCase(username).map(userMapper::toDto)
             .orElseThrow(UserNotFound::new);
    }
 
@@ -127,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
    @Override
    public boolean isOwner(String username, UUID userId) {
-      return userRepository.findByUsername(username).stream().anyMatch(user -> user.getId().equals(userId));
+      return userRepository.findByUsernameLikeIgnoreCase(username).stream().anyMatch(user -> user.getId().equals(userId));
    }
 
 

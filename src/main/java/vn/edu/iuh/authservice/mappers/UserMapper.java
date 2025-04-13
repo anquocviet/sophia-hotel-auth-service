@@ -36,8 +36,6 @@ import vn.edu.iuh.authservice.models.User;
 public interface UserMapper {
    @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
    @Mapping(target = "createdAt", expression = "java(java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()))")
-   @Mapping(source = "role", target = "role", qualifiedByName = "intToRole")
-   @Mapping(source = "gender", target = "gender", qualifiedByName = "intToGender")
    User toEntity(CreateUserRequest userRequest);
 
    UserResponse toDto(User user);
@@ -58,15 +56,5 @@ public interface UserMapper {
 
    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
    User partialUpdate(UserResponse userResponse, @MappingTarget User user);
-
-   @Named("intToRole")
-   static Role intToRole(Integer value) {
-      return value != null ? Role.values()[value] : null;
-   }
-
-   @Named("intToGender")
-   static Gender intToGender(Integer value) {
-      return value != null ? Gender.values()[value] : null;
-   }
 
 }

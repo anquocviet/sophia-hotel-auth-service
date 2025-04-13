@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Service
 public interface UserService {
-   UserResponse createUser(CreateUserRequest userRequest);
    UserResponse getUserById(UUID id);
    UserResponse getUserByUsername(String username);
    UserResponse getUserByPhone(String phone);
