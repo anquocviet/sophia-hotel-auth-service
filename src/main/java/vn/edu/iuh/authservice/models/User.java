@@ -1,9 +1,6 @@
 package vn.edu.iuh.authservice.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
@@ -45,6 +42,7 @@ public class User {
 
    private String password;
 
+   @Enumerated(EnumType.ORDINAL)
    private Role role;
 
    private String address;
@@ -54,6 +52,7 @@ public class User {
 
    private Date birthdate;
 
+   @Enumerated(EnumType.ORDINAL)
    private Gender gender;
 
    @Column(name = "created_at")

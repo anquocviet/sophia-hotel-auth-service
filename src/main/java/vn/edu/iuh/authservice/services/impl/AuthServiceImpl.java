@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
    }
 
    public String register(CreateUserRequest registerRequest) {
-      if (userRepository.findByUsername(registerRequest.username()).isPresent()) {
+      if (userRepository.findByUsernameLikeIgnoreCase(registerRequest.username()).isPresent()) {
          throw new IllegalArgumentException("User with username '" + registerRequest.username() + "' already exists.");
       }
 
