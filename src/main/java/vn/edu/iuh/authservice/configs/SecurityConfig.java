@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 import vn.edu.iuh.authservice.filters.JWTAuthenticationFilter;
 import vn.edu.iuh.authservice.utils.JWTUtil;
 
@@ -27,10 +28,12 @@ public class SecurityConfig {
 
    private final JWTUtil jwtUtil;
    private final UserDetailsService userDetailsService;
+   private final CorsConfigurationSource corsConfigurationSource;
 
-   public SecurityConfig(JWTUtil jwtUtil, UserDetailsService userDetailsService) {
+   public SecurityConfig(JWTUtil jwtUtil, UserDetailsService userDetailsService, CorsConfigurationSource corsConfigurationSource) {
       this.jwtUtil = jwtUtil;
       this.userDetailsService = userDetailsService;
+      this.corsConfigurationSource = corsConfigurationSource;
    }
 
    @Bean
@@ -50,11 +53,18 @@ public class SecurityConfig {
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http.csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                  .requestMatchers("/auth/**", "/v3/api-docs/**","/swagger-ui.html", "/swagger-ui/**").permitAll()
+                  .requestMatchers(
+                        "/auth/**", 
+                        "/v3/api-docs/**",
+                        "/api/v1/v3/api-docs/**",
+                        "/swagger-ui.html", 
+                        "/swagger-ui/**"
+                  ).permitAll()
                   .anyRequest().authenticated()
             )
-            .addFilterBefore(new JWTAuthenticationFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)  // Thêm filter xác thực JWT
+            .addFilterBefore(new JWTAuthenticationFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(
                   session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
