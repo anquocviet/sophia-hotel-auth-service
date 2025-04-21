@@ -25,4 +25,6 @@ public interface UserRepository extends CrudRepository<User, UUID> {
 
    @Query("select (count(u) > 0) from User u where u.email = ?1")
    boolean existsByEmail(@NotBlank(message = "Email is required") String email);
+
+  Optional<User> findByUsername(String username);
 }

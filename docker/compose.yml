@@ -10,26 +10,10 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://sophia-hotel-discovery-service-xq0g.onrender.com/eureka/
-      - DATABASE_URL=jdbc:postgresql://user-postgres:5432/postgres
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=postgres
-    depends_on:
-      - postgres
-    networks:
-      - sophia_hotel
-
-  postgres:
-    container_name: user-postgres
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres:/var/lib/postgresql/data
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+      - DATABASE_URL=jdbc:postgresql://dpg-cvr5eu3e5dus7386g53g-a.singapore-postgres.render.com/user_postgres
+      - DATABASE_USERNAME=user_postgres_user
+      - DATABASE_PASSWORD=X7GZQQZNUwirG8JfyLoWxyq6HJC89aIa
     networks:
       - sophia_hotel
 
