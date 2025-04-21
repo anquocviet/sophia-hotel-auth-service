@@ -1,5 +1,6 @@
 package vn.edu.iuh.authservice.services.impl;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
@@ -29,11 +30,13 @@ public class UserServiceImpl implements UserService {
 
    private final UserRepository userRepository;
    private final UserMapper userMapper;
+   private final PasswordEncoder passwordEncoder;
 
    public UserServiceImpl(UserRepository userRepository,
-                          UserMapper userMapper) {
+                          UserMapper userMapper, PasswordEncoder passwordEncoder) {
       this.userRepository = userRepository;
       this.userMapper = userMapper;
+      this.passwordEncoder = passwordEncoder;
    }
 
 
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
               .orElseThrow(UserNotFound::new);
 
       // Kiểm tra trùng username (nếu username thay đổi)
-      if (userRequest.username()!= null && !userRequest.username().equals(existingUser.getUsername())) {
+      if (userRequest.username() != null && !userRequest.username().equals(existingUser.getUsername())) {
          if (userRepository.existsByUsername(userRequest.username())) {
             throw new UsernameExists();
          }
@@ -96,8 +99,17 @@ public class UserServiceImpl implements UserService {
          }
       }
 
+      // Handle password separately - we need to encode it if present
+      String newPassword = userRequest.password();
+      boolean hasNewPassword = newPassword != null && !newPassword.isEmpty();
+
       // Cập nhật các field từ request vào existingUser
       userMapper.updateUserFromRequest(userRequest, existingUser);
+
+      // If there's a new password, encode it before saving
+      if (hasNewPassword) {
+         existingUser.setPassword(passwordEncoder.encode(newPassword));
+      }
 
       // Set updatedAt
       existingUser.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));

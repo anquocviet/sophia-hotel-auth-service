@@ -28,8 +28,6 @@ import org.mapstruct.*;
 import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
-import vn.edu.iuh.authservice.enums.Gender;
-import vn.edu.iuh.authservice.enums.Role;
 import vn.edu.iuh.authservice.models.User;
 
 @Mapper(componentModel = "spring")
@@ -49,12 +47,11 @@ public interface UserMapper {
    @Mapping(source = "phone", target = "phone")
    @Mapping(source = "email", target = "email")
    @Mapping(source = "username", target = "username")
-   @Mapping(source = "password", target = "password")
    @Mapping(source = "address", target = "address")
+   @Mapping(source = "password", target = "password", conditionExpression = "java(userRequest.password() != null && !userRequest.password().isEmpty())")
    @Mapping(target = "updatedAt", expression = "java(java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()))")
    void updateUserFromRequest(UpdateUserRequest userRequest, @MappingTarget User user);
 
    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
    User partialUpdate(UserResponse userResponse, @MappingTarget User user);
-
 }

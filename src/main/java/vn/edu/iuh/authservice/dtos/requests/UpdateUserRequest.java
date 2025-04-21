@@ -12,7 +12,7 @@ public record UpdateUserRequest(
         @NotBlank(message = "Id is required") String id,
         @NotBlank(message = "Name is required") String fullName,
         @NotBlank(message = "Username is required") String username,
-        @NotBlank(message = "Password is required") String password,
+        String password,
         @NotBlank(message = "Email is required") String email,
 
         String phone,
