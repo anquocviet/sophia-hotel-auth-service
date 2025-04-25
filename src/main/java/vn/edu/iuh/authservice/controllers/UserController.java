@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
+import vn.edu.iuh.authservice.dtos.requests.ChangePasswordRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
 import vn.edu.iuh.authservice.services.UserService;
 
@@ -64,6 +65,12 @@ public class UserController {
       // Parse id từ String sang UUID
       UUID id = UUID.fromString(userRequest.id());
       return ResponseEntity.ok(userService.updateUser(id, userRequest));
+   }
+
+   @PutMapping("/change-password")
+   public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+      userService.changePassword(request);
+      return ResponseEntity.noContent().build();
    }
 
    @DeleteMapping("/delete/{userId}")

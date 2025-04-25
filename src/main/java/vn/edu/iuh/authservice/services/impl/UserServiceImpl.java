@@ -2,6 +2,7 @@ package vn.edu.iuh.authservice.services.impl;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vn.edu.iuh.authservice.dtos.requests.ChangePasswordRequest;
 import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
@@ -49,19 +50,19 @@ public class UserServiceImpl implements UserService {
    @Override
    public UserResponse getUserByUsername(String username) {
       return userRepository.findByUsernameLikeIgnoreCase(username).map(userMapper::toDto)
-            .orElseThrow(UserNotFound::new);
+              .orElseThrow(UserNotFound::new);
    }
 
    @Override
    public UserResponse getUserByPhone(String phone) {
       return userRepository.findByPhone(phone).map(userMapper::toDto)
-            .orElseThrow(UserNotFound::new);
+              .orElseThrow(UserNotFound::new);
    }
 
    @Override
    public UserResponse getUserByEmail(String email) {
       return userRepository.findByEmail(email).map(userMapper::toDto)
-            .orElseThrow(UserNotFound::new);
+              .orElseThrow(UserNotFound::new);
    }
 
 //   @Override
@@ -139,5 +140,19 @@ public class UserServiceImpl implements UserService {
       return StreamSupport.stream(userRepository.findAll().spliterator(), false)
               .map(userMapper::toDto)
               .collect(Collectors.toList());
+   }
+
+   @Override
+   public void changePassword(ChangePasswordRequest request) {
+      User user = userRepository.findById(request.userId())
+              .orElseThrow(UserNotFound::new);
+
+      if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+         throw new RuntimeException("Old password is incorrect");
+      }
+
+      user.setPassword(passwordEncoder.encode(request.newPassword()));
+      user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+      userRepository.save(user);
    }
 }
