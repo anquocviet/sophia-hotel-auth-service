@@ -11,9 +11,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
-      - DATABASE_URL=jdbc:postgresql://dpg-cvr5eu3e5dus7386g53g-a.singapore-postgres.render.com/user_postgres
-      - DATABASE_USERNAME=user_postgres_user
-      - DATABASE_PASSWORD=X7GZQQZNUwirG8JfyLoWxyq6HJC89aIa
+      - DATABASE_URL=jdbc:postgresql://dpg-d0fhdnc9c44c73bca3mg-a.singapore-postgres.render.com/userdb_q40t
+      - DATABASE_USERNAME=userdb_q40t_user
+      - DATABASE_PASSWORD=41rtQTmfhOhlMEh1Zy8rO6Z0gIvpcsXj
     networks:
       - sophia_hotel
 
