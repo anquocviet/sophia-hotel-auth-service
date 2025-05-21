@@ -27,12 +27,6 @@ public class UserController {
       return ResponseEntity.ok(userService.getUserById(userId));
    }
 
-
-
-
-
-
-
    /////////////////
    @GetMapping("/username/{username}")
 //   @PreAuthorize("hasRole('USER')")
@@ -86,5 +80,10 @@ public class UserController {
       return ResponseEntity.ok(userService.getAllUser());
    }
 
+   @GetMapping("/count")
+   public ResponseEntity<Integer> getUserCount() {
+      int count = userService.getAllUser().size();
+      return ResponseEntity.ok(count);
+   }
 }
 
