@@ -1,6 +1,7 @@
 package vn.edu.iuh.authservice.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,8 +9,10 @@ import vn.edu.iuh.authservice.dtos.requests.CreateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
 import vn.edu.iuh.authservice.dtos.requests.ChangePasswordRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
+import vn.edu.iuh.authservice.dtos.responses.UserStatisticsResponse;
 import vn.edu.iuh.authservice.services.UserService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,6 +88,23 @@ public class UserController {
    public ResponseEntity<Integer> getUserCount() {
       int count = userService.getAllUser().size();
       return ResponseEntity.ok(count);
+   }
+
+
+   /**
+    * e. Thống kê khách hàng (Customer Statistics)
+    * API: GET /api/statistics/customers?from=YYYY-MM-DD&to=YYYY-MM-DD
+    * Dữ liệu trả về: Số lượng khách mới, khách quay lại, phân loại theo quốc tịch, độ tuổi, giới tính,...
+    * Mục đích: Phân tích tệp khách hàng, phục vụ marketing.
+    * @param from
+    * @param to
+    * @return
+    */
+   @GetMapping("/statistics")
+   public ResponseEntity<UserStatisticsResponse> getUserStatistics(
+           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+      return ResponseEntity.ok(userService.getUserStatistics(from, to));
    }
 }
 

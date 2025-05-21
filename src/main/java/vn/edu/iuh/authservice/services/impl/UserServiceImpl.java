@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.edu.iuh.authservice.dtos.requests.ChangePasswordRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
+import vn.edu.iuh.authservice.dtos.responses.UserStatisticsResponse;
 import vn.edu.iuh.authservice.exceptions.impl.EmailExistsException;
 import vn.edu.iuh.authservice.exceptions.impl.InvalidPasswordException;
 import vn.edu.iuh.authservice.exceptions.impl.PhoneExistsException;
@@ -19,10 +20,14 @@ import vn.edu.iuh.authservice.repositories.UserRepository;
 import vn.edu.iuh.authservice.services.UserService;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -226,5 +231,68 @@ public class UserServiceImpl implements UserService {
       
       // Set updated timestamp
       existingUser.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+   }
+
+
+
+   @Override
+   @Transactional(readOnly = true)
+   public UserStatisticsResponse getUserStatistics(LocalDate from, LocalDate to) {
+      log.info("Generating user statistics from {} to {}", from, to);
+
+      Timestamp fromTimestamp = Timestamp.valueOf(from.atStartOfDay());
+      Timestamp toTimestamp = Timestamp.valueOf(to.plusDays(1).atStartOfDay());
+
+      // Get users created in the specified period
+      List<User> usersInPeriod = userRepository.findByCreatedAtBetween(fromTimestamp, toTimestamp);
+
+      // Count new vs returning users (logic depends on your definition of "returning")
+      // For example: users who have bookings in the period but were created before
+      int totalUsers = usersInPeriod.size();
+      int newUsers = totalUsers; // Simplified: assuming all users in period are new
+      int returningUsers = 0;    // This would need integration with booking service
+
+
+
+      // Group users by age
+      Map<String, Integer> usersByAgeGroup = usersInPeriod.stream()
+              .filter(user -> user.getBirthdate() != null)
+              .collect(Collectors.groupingBy(
+                      user -> calculateAgeGroup((Timestamp) user.getBirthdate()),
+                      Collectors.summingInt(user -> 1)
+              ));
+
+      // Group users by gender
+      Map<String, Integer> usersByGender = usersInPeriod.stream()
+              .collect(Collectors.groupingBy(
+                      user -> user.getGender() != null ? user.getGender().name() : "Unknown",
+                      Collectors.summingInt(user -> 1)
+              ));
+
+      log.info("Statistics generated: {} total users, {} new users", totalUsers, newUsers);
+
+      return new UserStatisticsResponse(
+              totalUsers,
+              newUsers,
+              returningUsers,
+              usersByAgeGroup,
+              usersByGender
+      );
+   }
+
+   // Helper method to categorize users into age groups
+   private String calculateAgeGroup(Timestamp birthdate) {
+      if (birthdate == null) return "Unknown";
+
+      LocalDate birthDay = birthdate.toLocalDateTime().toLocalDate();
+      LocalDate now = LocalDate.now();
+      int age = Period.between(birthDay, now).getYears();
+
+      if (age < 18) return "Under 18";
+      if (age < 25) return "18-24";
+      if (age < 35) return "25-34";
+      if (age < 45) return "35-44";
+      if (age < 55) return "45-54";
+      return "55+";
    }
 }

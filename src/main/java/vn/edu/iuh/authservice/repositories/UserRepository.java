@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import vn.edu.iuh.authservice.models.User;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,4 +29,7 @@ public interface UserRepository extends CrudRepository<User, UUID> {
    boolean existsByEmail(@NotBlank(message = "Email is required") String email);
 
   Optional<User> findByUsername(String username);
+
+    // Add this to UserRepository.java
+    List<User> findByCreatedAtBetween(Timestamp from, Timestamp to);
 }

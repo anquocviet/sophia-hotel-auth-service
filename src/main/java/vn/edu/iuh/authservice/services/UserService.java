@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import vn.edu.iuh.authservice.dtos.requests.ChangePasswordRequest;
 import vn.edu.iuh.authservice.dtos.requests.UpdateUserRequest;
 import vn.edu.iuh.authservice.dtos.responses.UserResponse;
+import vn.edu.iuh.authservice.dtos.responses.UserStatisticsResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,4 +26,8 @@ public interface UserService {
    boolean isOwner(String username, UUID userId);
    List<UserResponse> getAllUser();
    void changePassword(ChangePasswordRequest request);
+   // Add this to UserService.java
+   UserStatisticsResponse getUserStatistics(LocalDate from, LocalDate to);
+
+
 }
